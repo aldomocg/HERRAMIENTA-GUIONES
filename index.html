@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UGC Médico · Neuromoduladores · Clinic Growth</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap');
+:root{
+  --bg:#0f0e0d;--bg2:#181614;--bg3:#201e1b;--bg4:#2a2723;
+  --border:#2e2b27;--border2:#3a3630;
+  --accent:#C2A290;--accent2:#d4b8a8;--accent-dim:rgba(194,162,144,.08);
+  --green:#7ab89a;--green-dim:rgba(122,184,154,.08);
+  --text:#e8e0d8;--text2:#b8afa6;--text3:#7a7068;
+  --font-serif:'DM Serif Display',Georgia,serif;
+  --font-sans:'DM Sans',system-ui,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:var(--font-sans);font-size:14px;line-height:1.7;min-height:100vh}
+
+/* HEADER */
+.header{padding:20px 24px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.header-left{display:flex;flex-direction:column;gap:4px}
+.header-logo{font-size:10px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--text3)}
+.header-title{font-family:var(--font-serif);font-size:20px;color:var(--text)}
+.header-title em{color:var(--accent);font-style:italic}
+.header-time{font-size:11px;color:var(--green);background:var(--green-dim);border:1px solid rgba(122,184,154,.2);border-radius:4px;padding:3px 10px;white-space:nowrap}
+
+/* PROGRESS */
+.progress-bar{padding:12px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px}
+.prog-label{font-size:11px;color:var(--text3);white-space:nowrap}
+.prog-track{flex:1;height:3px;background:var(--border2);border-radius:2px}
+.prog-fill{height:3px;background:var(--accent);border-radius:2px;transition:width .3s}
+.prog-count{font-size:11px;color:var(--accent);font-weight:500;white-space:nowrap}
+
+/* TABS */
+.tabs{display:flex;gap:0;border-bottom:1px solid var(--border);overflow-x:auto;padding:0 24px}
+.tab{font-size:12px;padding:10px 16px;color:var(--text3);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;transition:all .15s;font-family:var(--font-sans);background:none;border-top:none;border-left:none;border-right:none}
+.tab:hover{color:var(--text2)}
+.tab.on{color:var(--accent);border-bottom-color:var(--accent)}
+
+/* PANELS */
+.panel{display:none;padding:20px 24px}.panel.on{display:block}
+
+/* BLOCKS */
+.blk{margin-bottom:12px;border:1px solid var(--border);border-radius:8px;overflow:hidden}
+.blk-head{display:grid;grid-template-columns:32px 1fr auto;align-items:center;gap:10px;padding:11px 16px;background:var(--bg3);border-bottom:1px solid var(--border)}
+.blk-num{width:24px;height:24px;border-radius:50%;background:var(--accent-dim);border:1px solid rgba(194,162,144,.25);display:flex;align-items:center;justify-content:center;font-family:var(--font-serif);font-style:italic;font-size:13px;color:var(--accent);flex-shrink:0}
+.blk-name{font-size:13px;font-weight:500;color:var(--text)}
+.blk-dur{font-size:10px;color:var(--text3);background:var(--bg2);border:1px solid var(--border);border-radius:3px;padding:2px 8px;white-space:nowrap}
+.blk-body{padding:14px;display:flex;flex-direction:column;gap:12px}
+
+/* SCRIPT LINE */
+.sp{font-size:13px;line-height:1.9;color:var(--text);font-style:italic;padding:12px 14px;background:var(--bg2);border-left:2px solid var(--border2);border-radius:0 4px 4px 0}
+.sp-note{font-size:11px;color:var(--text3);font-style:normal;margin-top:6px}
+.pending{color:var(--accent);font-style:normal;border-bottom:1px dashed var(--accent);padding:0 2px;font-size:12px;opacity:.8;cursor:default}
+.filled{color:var(--accent2);font-style:italic;font-weight:500}
+
+/* OPTIONS */
+.og-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);margin-bottom:6px}
+.og-pills{display:flex;flex-wrap:wrap;gap:5px}
+.op{font-size:12px;padding:5px 11px;border:1px solid var(--border2);border-radius:4px;background:var(--bg2);color:var(--text2);cursor:pointer;transition:all .12s;line-height:1.4;font-family:var(--font-sans)}
+.op:hover{border-color:var(--accent);color:var(--accent)}
+.op.on{background:var(--accent-dim);border-color:var(--accent);color:var(--accent);font-weight:500}
+
+/* DIRECTOR NOTE */
+.dir{padding:10px 12px;background:var(--bg2);border:1px solid var(--border);border-radius:6px}
+.dir-title{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);margin-bottom:5px}
+.dir-main{font-size:12px;color:var(--text2);line-height:1.6;margin-bottom:8px}
+.dir-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.dir-box{background:var(--bg3);border:1px solid var(--border);border-radius:4px;padding:8px 10px}
+.dir-box-l{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--text3);margin-bottom:3px}
+.dir-box-v{font-size:12px;color:var(--text2);line-height:1.4}
+
+/* ASSEMBLED */
+.asm-blk{margin-bottom:20px}
+.asm-blk-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--text3);margin-bottom:6px;display:flex;align-items:center;gap:8px}
+.badge{font-size:10px;padding:2px 7px;border-radius:999px;border:1px solid}
+.badge-ok{color:#4caf82;border-color:#4caf82;background:rgba(76,175,130,.1)}
+.badge-pend{color:var(--accent);border-color:var(--accent);background:var(--accent-dim)}
+.asm-text{font-size:14px;line-height:1.95;color:var(--text);font-style:italic}
+.asm-note{font-size:11px;color:var(--text3);font-style:normal;margin-top:4px}
+.asm-abl{color:var(--accent);font-style:normal;border-bottom:1px dashed var(--accent);padding:0 2px;font-size:13px;opacity:.7}
+.asm-afl{color:var(--accent2);font-style:italic;font-weight:500}
+.divider{height:1px;background:var(--border);margin:16px 0}
+
+/* SHORT */
+.short-blk{margin-bottom:10px;padding:12px 14px;background:var(--bg3);border-radius:6px;border:1px solid var(--border)}
+.short-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);margin-bottom:5px}
+.short-text{font-size:13px;line-height:1.85;color:var(--text);font-style:italic}
+.dyn{color:var(--text3);font-style:italic}
+.dyn.on{color:var(--accent2);font-weight:500}
+
+/* COPY BTN */
+.copy-btn{display:block;width:100%;margin-top:16px;padding:10px;background:var(--accent-dim);border:1px solid var(--accent);border-radius:6px;color:var(--accent);font-size:12px;font-weight:500;cursor:pointer;text-align:center;font-family:var(--font-sans);transition:all .15s}
+.copy-btn:hover{background:rgba(194,162,144,.15)}
+
+/* SCROLLBAR */
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-left">
+    <div class="header-logo">Clinic Growth · UGC Médico</div>
+    <div class="header-title">Herramienta de guion — <em>Neuromoduladores</em></div>
+  </div>
+  <div class="header-time">⏱ Menos de 2 min</div>
+</div>
+
+<div class="progress-bar">
+  <div class="prog-label">Bloques completados</div>
+  <div class="prog-track"><div class="prog-fill" id="uprog" style="width:0%"></div></div>
+  <div class="prog-count"><span id="uprog-num">0</span> / 6</div>
+</div>
+
+<div class="tabs">
+  <button class="tab on" onclick="usv('elegir',this)">① Elige opciones</button>
+  <button class="tab" onclick="usv('guion',this)">② Lee el guion</button>
+  <button class="tab" onclick="usv('corto',this)">③ Versión corta</button>
+</div>
+
+<!-- ═══ PANEL 1 — ELEGIR ═══ -->
+<div class="panel on" id="up-elegir">
+
+  <!-- BLOQUE 1 -->
+  <div class="blk">
+    <div class="blk-head">
+      <div class="blk-num">1</div>
+      <div class="blk-name">Presentación del caso</div>
+      <div class="blk-dur">0–5 seg</div>
+    </div>
+    <div class="blk-body">
+      <div class="sp">"Hoy tenemos un caso de neuromoduladores. <span class="pending" id="us1n">nombre</span> <span id="us1con"></span> <span class="pending" id="us1">elige caso</span>."
+        <div class="sp-note">El nombre lo pone el cámara antes de grabar. El conector cambia automáticamente según el caso.</div>
+      </div>
+      <div>
+        <div class="og-label">Nombre de la paciente</div>
+        <input type="text" id="name-input" placeholder="Escribe el nombre aquí" style="width:100%;padding:8px 12px;background:var(--bg2);border:1px solid var(--border2);border-radius:5px;color:var(--text);font-size:13px;font-family:var(--font-sans);margin-bottom:12px" oninput="setName(this.value)">
+        <div class="og-label">¿Cuál es el caso?</div>
+        <div class="og-pills" id="ug1">
+          <div class="op" onclick="usel(1,'lleva tiempo viendo que las arrugas de la frente ya se le quedan aunque no esté haciendo ningún gesto.','siente que')">arrugas de frente en reposo</div>
+          <div class="op" onclick="usel(1,'patas de gallo que ya se le quedan marcadas aunque tenga la cara en reposo.','— tiene')">patas de gallo</div>
+          <div class="op" onclick="usel(1,'las arrugas empiezan a crearse y quiere actuar antes de que se instalen.','siente que')">prevención — sin arrugas todavía</div>
+          <div class="op" onclick="usel(1,'las líneas del entrecejo le dan un gesto de enfado permanente aunque esté tranquila.','siente que')">líneas del entrecejo</div>
+          <div class="op" onclick="usel(1,'las arrugas de la frente y las líneas del entrecejo le dan una expresión de cansancio y tensión que no refleja cómo se siente.','siente que')">frente + entrecejo</div>
+          <div class="op" onclick="usel(1,'las arrugas de la frente y las patas de gallo cada vez se le marcan más aunque tenga la cara en reposo.','siente que')">frente + patas de gallo</div>
+          <div class="op" onclick="usel(1,'las arrugas de la frente, las líneas del entrecejo y las patas de gallo se han ido marcando con los años y quiere recuperar una expresión más descansada.','siente que')">frente + entrecejo + patas de gallo</div>
+        </div>
+      </div>
+      <div class="dir">
+        <div class="dir-title">Indicaciones de grabación</div>
+        <div class="dir-main">Plano medio. Doctora a cámara. Tono cercano, como si le estuviera contando algo a alguien de confianza.</div>
+        <div class="dir-grid">
+          <div class="dir-box"><div class="dir-box-l">Tono</div><div class="dir-box-v">Natural y cercano. No clínico.</div></div>
+          <div class="dir-box"><div class="dir-box-l">No hacer</div><div class="dir-box-v">No juzgar el aspecto. No usar términos médicos.</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BLOQUE 2 -->
+  <div class="blk">
+    <div class="blk-head">
+      <div class="blk-num">2</div>
+      <div class="blk-name">Qué vemos y por qué ocurre</div>
+      <div class="blk-dur">5–15 seg</div>
+    </div>
+    <div class="blk-body">
+      <div class="sp">"<span class="pending" id="us2a">hueco 1</span> <span class="pending" id="us2b">hueco 2</span>"
+        <div class="sp-note">Dos frases independientes. La primera es lo que ves clínicamente. La segunda cómo lo vive ella.</div>
+      </div>
+      <div>
+        <div class="og-label">¿Qué ves? (hueco 1)</div>
+        <div class="og-pills" id="ug2a">
+          <div class="op" onclick="usel('2a','El músculo de la frente lleva tiempo repitiendo el mismo gesto y la piel ya no recupera su posición.')">frente — piel que no vuelve</div>
+          <div class="op" onclick="usel('2a','La piel del lateral del ojo es muy fina y lleva años moviéndose con cada expresión.')">patas de gallo — líneas en reposo</div>
+          <div class="op" onclick="usel('2a','Los músculos tienen una actividad alta y las líneas empiezan a marcarse.')">prevención — líneas que empiezan a marcarse</div>
+          <div class="op" onclick="usel('2a','El músculo del entrecejo tiene una contracción constante y muy marcada.')">entrecejo — contracción marcada</div>
+          <div class="op" onclick="usel('2a','Son los dos músculos que más se activan con las expresiones del día a día.')">frente + entrecejo</div>
+          <div class="op" onclick="usel('2a','La piel de esas zonas pierde elasticidad con los años y ya no recupera su forma entre gesto y gesto.')">frente + patas de gallo</div>
+          <div class="op" onclick="usel('2a','Con los años la piel va perdiendo capacidad de recuperarse entre expresión y expresión.')">frente + entrecejo + patas de gallo</div>
+        </div>
+      </div>
+      <div style="margin-top:8px">
+        <div class="og-label">¿Cómo lo siente ella? (hueco 2)</div>
+        <div class="og-pills" id="ug2b">
+          <div class="op" onclick="usel('2b','Por eso esas líneas se han quedado marcadas aunque no esté haciendo ningún gesto.')">frente — huella permanente</div>
+          <div class="op" onclick="usel('2b','Por eso esas líneas ya están ahí aunque no esté sonriendo.')">patas de gallo — piel fina</div>
+          <div class="op" onclick="usel('2b','Si no actuamos ahora, en unos años serán mucho más difíciles de tratar.')">prevención — mejor actuar ahora</div>
+          <div class="op" onclick="usel('2b','Por eso la cara proyecta ese gesto de enfado que no tiene nada que ver con cómo se siente.')">entrecejo — gesto que no refleja</div>
+          <div class="op" onclick="usel('2b','Por eso con el tiempo dejan esa huella de tensión aunque ella esté tranquila.')">frente + entrecejo</div>
+          <div class="op" onclick="usel('2b','Por eso las marcas se quedan aunque la cara esté en reposo.')">frente + patas de gallo</div>
+          <div class="op" onclick="usel('2b','Por eso la cara en reposo ya no transmite cómo se siente por dentro.')">frente + entrecejo + patas de gallo</div>
+        </div>
+      </div>
+      <div class="dir">
+        <div class="dir-title">Indicaciones de grabación</div>
+        <div class="dir-main">Señala la zona con un gesto suave mientras lo describes. Pausa entre los dos huecos.</div>
+        <div class="dir-grid">
+          <div class="dir-box"><div class="dir-box-l">Tono</div><div class="dir-box-v">Empático. Como si entendieras perfectamente cómo se siente.</div></div>
+          <div class="dir-box"><div class="dir-box-l">No hacer</div><div class="dir-box-v">No describir negativamente el físico.</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BLOQUE 3 -->
+  <div class="blk">
+    <div class="blk-head">
+      <div class="blk-num">3</div>
+      <div class="blk-name">Qué hacemos y cómo</div>
+      <div class="blk-dur">15–28 seg</div>
+    </div>
+    <div class="blk-body">
+      <div class="sp">"Lo que hacemos es aplicar neuromoduladores en <span class="pending" id="us3a">zona</span>. Lo que consigue es <span class="pending" id="us3b">efecto</span>. <span id="us3c"></span>"
+        <div class="sp-note">Explicar como si le hablaras a alguien que no sabe nada del tratamiento. Sin jerga.</div>
+      </div>
+      <div>
+        <div class="og-label">¿En qué zona?</div>
+        <div class="og-pills" id="ug3a">
+          <div class="op" onclick="usel('3a','la frente')">la frente</div>
+          <div class="op" onclick="usel('3a','el entrecejo')">el entrecejo</div>
+          <div class="op" onclick="usel('3a','el lateral de los ojos')">el lateral de los ojos</div>
+          <div class="op" onclick="usel('3a','la frente y el entrecejo')">frente y entrecejo</div>
+          <div class="op" onclick="usel('3a','la frente y el lateral de los ojos')">frente y lateral</div>
+          <div class="op" onclick="usel('3a','la frente, el entrecejo y el lateral de los ojos')">frente, entrecejo y lateral</div>
+          <div class="op" onclick="usel('3a','varias zonas del rostro')">tratamiento general — varias zonas</div>
+        </div>
+      </div>
+      <div style="margin-top:8px">
+        <div class="og-label">¿Qué efecto tiene?</div>
+        <div class="og-pills" id="ug3b">
+          <div class="op" onclick="usel('3b','que esas arrugas se suavicen y la frente se vea más descansada')">suavizar arrugas de frente</div>
+          <div class="op" onclick="usel('3b','que ese gesto tenso entre las cejas desaparezca y la expresión sea más neutral')">eliminar gesto tenso del entrecejo</div>
+          <div class="op" onclick="usel('3b','que esas líneas se suavicen y los ojos se vean más descansados')">suavizar arrugas del ojo</div>
+          <div class="op" onclick="usel('3b','que esas arrugas se suavicen y la expresión sea más neutral y descansada')">suavizar frente y entrecejo</div>
+          <div class="op" onclick="usel('3b','que esas líneas se suavicen y la cara se vea más descansada')">suavizar frente y lateral</div>
+          <div class="op" onclick="usel('3b','que esas líneas se suavicen y la cara recupere una expresión más descansada y natural')">suavizar las tres zonas</div>
+          <div class="op" onclick="usel('3b','que esas líneas no se sigan marcando con el tiempo')">prevenir que se sigan marcando</div>
+        </div>
+      </div>
+      <div style="margin-top:8px">
+        <div class="og-label">¿Algo más que aclarar? (opcional)</div>
+        <div class="og-pills" id="ug3c">
+          <div class="op on" onclick="usel('3c','')">No, con esto es suficiente</div>
+          <div class="op" onclick="usel('3c','Y lo bueno es que la dosis que usamos es muy pequeña, lo justo para conseguir el efecto sin que se note que has hecho nada.')">dosis pequeña, resultado natural</div>
+          <div class="op" onclick="usel('3c','Siempre empezamos con muy poco y vamos viendo cómo responde, para que el resultado sea el más natural posible.')">empezar suave y ajustar</div>
+        </div>
+      </div>
+      <div class="dir">
+        <div class="dir-title">Indicaciones de grabación</div>
+        <div class="dir-main">Señala la zona mientras la nombras. Habla despacio en este bloque — es el más importante para la comprensión.</div>
+        <div class="dir-grid">
+          <div class="dir-box"><div class="dir-box-l">Tono</div><div class="dir-box-v">Claro y tranquilo. Que cualquiera lo entienda.</div></div>
+          <div class="dir-box"><div class="dir-box-l">No hacer</div><div class="dir-box-v">No decir botox. No decir toxina. No prometer duración exacta.</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BLOQUE 4 -->
+  <div class="blk">
+    <div class="blk-head">
+      <div class="blk-num">4</div>
+      <div class="blk-name">La clave que marca la diferencia</div>
+      <div class="blk-dur">28–36 seg</div>
+    </div>
+    <div class="blk-body">
+      <div class="sp">"<span class="pending" id="us4">elige frase</span>"
+        <div class="sp-note">Mira a cámara directo. Es el momento en que el espectador decide si confía en ti o no.</div>
+      </div>
+      <div>
+        <div class="og-label">Elige la frase que más encaja con este caso:</div>
+        <div class="og-pills" id="ug4">
+          <div class="op" onclick="usel(4,'Lo que marca la diferencia en neuromoduladores es la cantidad que se pone. Con la dosis justa el resultado se ve natural. Con demasiada, es cuando aparece esa cara rígida que nadie quiere.')">la dosis es lo que marca la diferencia</div>
+          <div class="op" onclick="usel(4,'Mucha gente piensa que esto te deja sin expresión. Nada que ver. Lo que hacemos es suavizar, no paralizar. La cara sigue siendo tuya, solo más descansada.')">no paraliza — suaviza</div>
+          <div class="op" onclick="usel(4,'Empezar antes de que las arrugas aparezcan tiene mucho más sentido de lo que parece. Si el músculo no repite el mismo gesto año tras año, las marcas tardan mucho más en quedarse.')">empezar pronto — prevención</div>
+          <div class="op" onclick="usel(4,'Lo que diferencia un buen resultado de uno malo no es el producto — es saber exactamente dónde y cuánto poner según cada cara.')">el resultado depende de quién lo hace</div>
+        </div>
+      </div>
+      <div class="dir">
+        <div class="dir-title">Indicaciones de grabación</div>
+        <div class="dir-main">Pausa antes de empezar esta frase. Mirada directa a cámara. Habla al espectador, no a la paciente.</div>
+        <div class="dir-grid">
+          <div class="dir-box"><div class="dir-box-l">Tono</div><div class="dir-box-v">Seguro y cercano. Sin sonar a publicidad.</div></div>
+          <div class="dir-box"><div class="dir-box-l">No hacer</div><div class="dir-box-v">No decir "somos los mejores" ni "técnica exclusiva".</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BLOQUE 5 -->
+  <div class="blk">
+    <div class="blk-head">
+      <div class="blk-num">5</div>
+      <div class="blk-name">Resultado real</div>
+      <div class="blk-dur">36–44 seg</div>
+    </div>
+    <div class="blk-body">
+      <div class="sp">"<span class="pending" id="us5">elige resultado</span> Y sin que nadie sepa que te has hecho nada."
+        <div class="sp-note">La frase final es fija. Es la que más retención genera porque resuelve el miedo principal.</div>
+      </div>
+      <div>
+        <div class="og-label">¿Qué resultado concreto busca esta paciente?</div>
+        <div class="og-pills" id="ug5">
+          <div class="op" onclick="usel(5,'Lo que busca ella es mirarse al espejo y ver una frente más relajada. Que esas líneas estén ahí pero no llamen tanto la atención cuando tiene la cara en reposo.')">frente más relajada en reposo</div>
+          <div class="op" onclick="usel(5,'Lo que buscamos es que su expresión en reposo sea más neutral. Que la cara transmita exactamente cómo se siente, sin ese gesto de enfado que no tiene nada que ver con ella.')">expresión que refleje cómo se siente</div>
+          <div class="op" onclick="usel(5,'Lo que busca es que los ojos tengan un aspecto más descansado. Que esas arrugas del lateral se suavicen y la mirada se vea más fresca.')">ojos más descansados y frescos</div>
+          <div class="op" onclick="usel(5,'Lo que busca es que la gente deje de preguntarle si está cansada. Que la mirada se vea abierta y descansada, como ella se siente.')">que dejen de preguntarle si está cansada</div>
+          <div class="op" onclick="usel(5,'Lo que busca es invertir ahora para que dentro de diez años su piel esté en mejor estado. Que las arrugas no se marquen tanto con el tiempo.')">invertir ahora para dentro de diez años</div>
+        </div>
+      </div>
+      <div class="dir">
+        <div class="dir-title">Indicaciones de grabación</div>
+        <div class="dir-main">Primero mira a la paciente cuando describes su resultado. Luego vuelve a cámara para la frase final fija.</div>
+        <div class="dir-grid">
+          <div class="dir-box"><div class="dir-box-l">Tono</div><div class="dir-box-v">Cálido. Como si ya vieras el resultado antes de que ocurra.</div></div>
+          <div class="dir-box"><div class="dir-box-l">No hacer</div><div class="dir-box-v">No decir "quedará perfecta". No prometer nada exacto.</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BLOQUE 6 -->
+  <div class="blk">
+    <div class="blk-head">
+      <div class="blk-num">6</div>
+      <div class="blk-name">Autoridad + CTA</div>
+      <div class="blk-dur">39–45 seg</div>
+    </div>
+    <div class="blk-body">
+      <div class="sp">"En <span class="pending" id="us6a">nombre clínica o consulta</span> siempre empezamos por un diagnóstico gratuito y personalizado antes de aplicar nada, porque la dosis y la técnica tienen que adaptarse a cada caso. Si quieres saber si este tratamiento tiene sentido en tu caso, haz clic, rellena el formulario y solicita tu diagnóstico gratuito."
+        <div class="sp-note">El bloque de autoridad nombra la clínica. La última frase es siempre fija.</div>
+      </div>
+      <div>
+        <div class="og-label">¿Clínica o doctor independiente?</div>
+        <div class="og-pills" id="ug6">
+          <div class="op" onclick="usel2('6a','[Nombre de la clínica]')">Clínica (nombre propio)</div>
+          <div class="op" onclick="usel2('6a','mi consulta')">Doctor independiente</div>
+        </div>
+      </div>
+      <div class="dir">
+        <div class="dir-title">Indicaciones de grabación</div>
+        <div class="dir-main">Plano medio, sola, mirada a cámara. Pausa antes del CTA. Invitar, no vender.</div>
+        <div class="dir-grid">
+          <div class="dir-box"><div class="dir-box-l">Tono</div><div class="dir-box-v">Cálido, directo.</div></div>
+          <div class="dir-box"><div class="dir-box-l">No hacer</div><div class="dir-box-v">No cerrar con énfasis ascendente ni urgencia forzada.</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <button class="copy-btn" onclick="usv('guion', document.querySelectorAll('.tab')[1])">Ver guion completo →</button>
+</div><!-- end panel elegir -->
+
+
+<!-- ═══ PANEL 2 — GUION ═══ -->
+<div class="panel" id="up-guion">
+
+  <div style="margin-bottom:20px;padding:12px 16px;background:var(--bg3);border:1px solid var(--border2);border-radius:8px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">
+    <div>
+      <div style="font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);margin-bottom:3px">Progreso</div>
+      <div style="font-size:13px;color:var(--text)">Bloques completados: <span style="color:var(--accent);font-weight:500" id="uprog-num2">0</span> / 6</div>
+    </div>
+    <button class="copy-btn" style="margin:0;padding:7px 16px;width:auto" onclick="copyGuion()">📋 Copiar guion</button>
+  </div>
+
+  <div class="asm-blk">
+    <div class="asm-blk-label">Bloque 1 · Presentación &nbsp;<span class="badge badge-pend" id="ust1">pendiente</span></div>
+    <div class="asm-text">"Hoy tenemos un caso de neuromoduladores. <span class="asm-abl" id="ua1n">nombre</span> <span id="ua1con"></span> <span class="asm-abl" id="ua1">elige en el paso anterior</span>."</div>
+    <div class="asm-note">Plano medio. Doctora a cámara. Tono cercano.</div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="asm-blk">
+    <div class="asm-blk-label">Bloque 2 · Qué vemos &nbsp;<span class="badge badge-pend" id="ust2">pendiente</span></div>
+    <div class="asm-text">"<span class="asm-abl" id="ua2a">elige en el paso anterior</span> <span class="asm-abl" id="ua2b">elige en el paso anterior</span>"</div>
+    <div class="asm-note">Señala la zona con un gesto suave.</div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="asm-blk">
+    <div class="asm-blk-label">Bloque 3 · Qué hacemos &nbsp;<span class="badge badge-pend" id="ust3">pendiente</span></div>
+    <div class="asm-text">"Lo que hacemos es aplicar neuromoduladores en <span class="asm-abl" id="ua3a">elige zona</span>. Lo que consigue es <span class="asm-abl" id="ua3b">elige efecto</span>. <span id="ua3c"></span>"</div>
+    <div class="asm-note">Señala la zona. Habla despacio en este bloque.</div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="asm-blk">
+    <div class="asm-blk-label">Bloque 4 · La clave &nbsp;<span class="badge badge-pend" id="ust4">pendiente</span></div>
+    <div class="asm-text" id="ua4">"<span class="asm-abl">elige frase</span>"</div>
+    <div class="asm-note">Mirada directa a cámara. Pausa antes de empezar.</div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="asm-blk">
+    <div class="asm-blk-label">Bloque 5 · Resultado &nbsp;<span class="badge badge-pend" id="ust5">pendiente</span></div>
+    <div class="asm-text">"<span class="asm-abl" id="ua5">elige resultado</span> Y sin que nadie sepa que te has hecho nada."</div>
+    <div class="asm-note">Mira a la paciente primero, vuelve a cámara en la frase final.</div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="asm-blk">
+    <div class="asm-blk-label">Bloque 6 · CTA &nbsp;<span class="badge badge-pend" id="ust6">pendiente</span></div>
+    <div class="asm-text">"En <span class="asm-abl" id="ua6a">elige clínica o consulta</span> siempre empezamos por un diagnóstico gratuito y personalizado antes de aplicar nada, porque la dosis y la técnica tienen que adaptarse a cada caso. Si quieres saber si este tratamiento tiene sentido en tu caso, haz clic, rellena el formulario y solicita tu diagnóstico gratuito."</div>
+    <div class="asm-note">Pausa antes del CTA. Invitar, no vender.</div>
+  </div>
+
+</div><!-- end panel guion -->
+
+
+<!-- ═══ PANEL 3 — VERSIÓN CORTA ═══ -->
+<div class="panel" id="up-corto">
+
+  <div class="short-blk">
+    <div class="short-label">Bloque 1 · Presentación</div>
+    <div class="short-text">"Hoy tenemos un caso. <span class="dyn" id="uc1n">nombre</span> <span id="uc1con"></span> <span class="dyn" id="uc1">—</span>"</div>
+  </div>
+
+  <div class="short-blk">
+    <div class="short-label">Bloque 2 · Qué vemos</div>
+    <div class="short-text">"<span class="dyn" id="uc2a">—</span> <span class="dyn" id="uc2b">—</span>"</div>
+  </div>
+
+  <div class="short-blk">
+    <div class="short-label">Bloque 3 · Qué hacemos</div>
+    <div class="short-text">"Neuromoduladores en <span class="dyn" id="uc3a">—</span> para <span class="dyn" id="uc3b">—</span>."</div>
+  </div>
+
+  <div class="short-blk">
+    <div class="short-label">Bloque 4 · La clave</div>
+    <div class="short-text"><span class="dyn" id="uc4s">—</span></div>
+  </div>
+
+  <div class="short-blk">
+    <div class="short-label">Bloque 5 · Resultado</div>
+    <div class="short-text"><span class="dyn" id="uc5">—</span> Y sin que nadie sepa que te has hecho nada."</div>
+  </div>
+
+  <div class="short-blk">
+    <div class="short-label">Bloque 6 · CTA</div>
+    <div class="short-text">"En <span class="dyn" id="uc6a">—</span>, diagnóstico gratuito y personalizado primero. Haz clic, rellena el formulario y solicita tu diagnóstico gratuito."</div>
+  </div>
+
+</div><!-- end panel corto -->
+
+
+<script>
+const US={};
+
+function setName(val){
+  US['name']=val;
+  const e1=document.getElementById('us1n');if(e1){e1.textContent=val||'nombre';e1.className=val?'filled':'pending';}
+  const e2=document.getElementById('ua1n');if(e2){e2.textContent=val||'nombre';e2.className=val?'asm-afl':'asm-abl';}
+  const e3=document.getElementById('uc1n');if(e3){e3.textContent=val||'nombre';e3.className=val?'dyn on':'dyn';}
+}
+
+function usel(id,val,con){
+  US[id]=val;
+  if(id===1&&con!==undefined){
+    US['1con']=con;
+    ['us1con','ua1con','uc1con'].forEach(sid=>{const e=document.getElementById(sid);if(e)e.textContent=con;});
+  }
+  const pm={1:'us1','2a':'us2a','2b':'us2b','3a':'us3a','3b':'us3b','3c':'us3c',4:'us4',5:'us5'};
+  const pid=pm[String(id)];
+  if(pid){const e=document.getElementById(pid);if(e){e.textContent=val||'';e.className=val?'filled':'pending';}}
+  const gm={1:'ug1','2a':'ug2a','2b':'ug2b','3a':'ug3a','3b':'ug3b','3c':'ug3c',4:'ug4',5:'ug5'};
+  const grp=document.getElementById(gm[String(id)]);
+  if(grp){
+    grp.querySelectorAll('.op').forEach(o=>o.classList.remove('on'));
+    if(val){
+      grp.querySelectorAll('.op').forEach(o=>{
+        const oc=o.getAttribute('onclick')||'';
+        o.classList.toggle('on', oc.includes("'"+val+"'") || oc.includes('"'+val+'"'));
+      });
+    } else {
+      const firstEmpty=grp.querySelector(".op[onclick*=\"usel('3c','')\"]");
+      if(firstEmpty)firstEmpty.classList.add('on');
+    }
+  }
+  if(id===1){
+    const preload={
+      'lleva tiempo viendo que las arrugas de la frente ya se le quedan aunque no esté haciendo ningún gesto.':{
+        '2a':'El músculo de la frente lleva tiempo repitiendo el mismo gesto y la piel ya no recupera su posición.',
+        '2b':'Por eso esas líneas se han quedado marcadas aunque no esté haciendo ningún gesto.',
+        '3a':'la frente',
+        '3b':'que esas arrugas se suavicen y la frente se vea más descansada'
+      },
+      'patas de gallo que ya se le quedan marcadas aunque tenga la cara en reposo.':{
+        '2a':'La piel del lateral del ojo es muy fina y lleva años moviéndose con cada expresión.',
+        '2b':'Por eso esas líneas ya están ahí aunque no esté sonriendo.',
+        '3a':'el lateral de los ojos',
+        '3b':'que esas líneas se suavicen y los ojos se vean más descansados'
+      },
+      'las arrugas empiezan a crearse y quiere actuar antes de que se instalen.':{
+        '2a':'Los músculos tienen una actividad alta y las líneas empiezan a marcarse.',
+        '2b':'Si no actuamos ahora, en unos años serán mucho más difíciles de tratar.'
+      },
+      'las líneas del entrecejo le dan un gesto de enfado permanente aunque esté tranquila.':{
+        '2a':'El músculo del entrecejo tiene una contracción constante y muy marcada.',
+        '2b':'Por eso la cara proyecta ese gesto de enfado que no tiene nada que ver con cómo se siente.',
+        '3a':'el entrecejo',
+        '3b':'que ese gesto tenso entre las cejas desaparezca y la expresión sea más neutral'
+      },
+      'las arrugas de la frente y las líneas del entrecejo le dan una expresión de cansancio y tensión que no refleja cómo se siente.':{
+        '2a':'Son los dos músculos que más se activan con las expresiones del día a día.',
+        '2b':'Por eso con el tiempo dejan esa huella de tensión aunque ella esté tranquila.',
+        '3a':'la frente y el entrecejo',
+        '3b':'que esas arrugas se suavicen y la expresión sea más neutral y descansada'
+      },
+      'las arrugas de la frente y las patas de gallo cada vez se le marcan más aunque tenga la cara en reposo.':{
+        '2a':'La piel de esas zonas pierde elasticidad con los años y ya no recupera su forma entre gesto y gesto.',
+        '2b':'Por eso las marcas se quedan aunque la cara esté en reposo.',
+        '3a':'la frente y el lateral de los ojos',
+        '3b':'que esas líneas se suavicen y la cara se vea más descansada'
+      },
+      'las arrugas de la frente, las líneas del entrecejo y las patas de gallo se han ido marcando con los años y quiere recuperar una expresión más descansada.':{
+        '2a':'Con los años la piel va perdiendo capacidad de recuperarse entre expresión y expresión.',
+        '2b':'Por eso la cara en reposo ya no transmite cómo se siente por dentro.',
+        '3a':'la frente, el entrecejo y el lateral de los ojos',
+        '3b':'que esas líneas se suavicen y la cara recupere una expresión más descansada y natural'
+      }
+    };
+    const pre=preload[val];
+    if(pre){
+      Object.entries(pre).forEach(([k,v])=>{
+        US[k]=v;
+        const ep=document.getElementById('us'+k);if(ep){ep.textContent=v;ep.className='filled';}
+        const ea=document.getElementById('ua'+k);if(ea){ea.textContent=v;ea.className='asm-afl';}
+        const ec=document.getElementById('uc'+k);if(ec){ec.textContent=v;ec.className='dyn on';}
+        const grp2=document.getElementById('ug'+k);
+        if(grp2){
+          grp2.querySelectorAll('.op').forEach(o=>{
+            const oc=o.getAttribute('onclick')||'';
+            o.classList.toggle('on',oc.includes("'"+v+"'")||oc.includes('"'+v+'"'));
+          });
+        }
+      });
+    }
+  }
+  uAss();uShort();uProg();
+}
+
+function usel2(id1,val1){
+  US[id1]=val1;
+  const e1=document.getElementById('us'+id1);
+  if(e1){e1.textContent=val1;e1.className='filled';}
+  const grp=document.getElementById('ug6');
+  if(grp){
+    grp.querySelectorAll('.op').forEach(o=>o.classList.remove('on'));
+    if(event&&event.target)event.target.classList.add('on');
+  }
+  uAss();uProg();
+}
+
+function uAss(){
+  const set=(id,val)=>{const e=document.getElementById(id);if(!e)return;if(val){e.textContent=val;e.className='asm-afl';}else{e.textContent='elige en el paso anterior';e.className='asm-abl';}};
+  set('ua1',US[1]);set('ua2a',US['2a']);set('ua2b',US['2b']);set('ua3a',US['3a']);set('ua3b',US['3b']);
+  const a3c=document.getElementById('ua3c');if(a3c){a3c.textContent=US['3c']||'';a3c.className=US['3c']?'asm-afl':'';}
+  const a4=document.getElementById('ua4');if(a4){a4.innerHTML=US[4]?`"<span class="asm-afl">${US[4]}</span>"`:`"<span class="asm-abl">elige frase de criterio</span>"`;}
+  set('ua5',US[5]);set('ua6a',US['6a']);
+  const checks={ust1:!!US[1],ust2:!!(US['2a']&&US['2b']),ust3:!!(US['3a']&&US['3b']),ust4:!!US[4],ust5:!!US[5],ust6:!!US['6a']};
+  for(const[id,ok]of Object.entries(checks)){const e=document.getElementById(id);if(e){e.textContent=ok?'listo':'pendiente';e.className='badge '+(ok?'badge-ok':'badge-pend');}}
+  const n2=document.getElementById('uprog-num2');if(n2)n2.textContent=Object.values(checks).filter(Boolean).length;
+}
+
+function uShort(){
+  const m={uc1:US[1],uc2a:US['2a'],uc2b:US['2b'],uc3a:US['3a'],uc3b:US['3b'],uc5:US[5],uc6a:US['6a']};
+  for(const[id,val]of Object.entries(m)){const e=document.getElementById(id);if(e){e.textContent=val||'—';e.className=val?'dyn on':'dyn';}}
+  const c4s=document.getElementById('uc4s');if(c4s&&US[4]){const first=US[4].split('.')[0];c4s.textContent='"'+first+'."';c4s.className='dyn on';}
+}
+
+function uProg(){
+  const done=[!!US[1],!!(US['2a']&&US['2b']),!!(US['3a']&&US['3b']),!!US[4],!!US[5],!!US['6a']].filter(Boolean).length;
+  const pn=document.getElementById('uprog-num');const pf=document.getElementById('uprog');
+  if(pn)pn.textContent=done;if(pf)pf.style.width=(done/6*100)+'%';
+}
+
+function usv(id,btn){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.tab').forEach(b=>b.classList.remove('on'));
+  const panel=document.getElementById('up-'+id);if(panel)panel.classList.add('on');
+  if(btn)btn.classList.add('on');
+}
+
+function copyGuion(){
+  const get=(id,fb)=>{const e=document.getElementById(id);return(e&&e.className==='asm-afl')?e.textContent:fb};
+  const b0=US['name']||'[nombre]';
+  const b0con=US['1con']||'siente que';
+  const b1=get('ua1','[pendiente]');
+  const b2a=get('ua2a','[pendiente]');const b2b=get('ua2b','[pendiente]');
+  const b3a=get('ua3a','[pendiente]');const b3b=get('ua3b','[pendiente]');
+  const b3c=US['3c']?' '+US['3c']:'';
+  const b4=US[4]?US[4]:'[pendiente]';
+  const b5=US[5]?US[5]:'[pendiente]';
+  const b6a=get('ua6a','[pendiente]');
+  const txt=`GUION UGC MÉDICO — NEUROMODULADORES\n\n[B1 · 0-5 seg]\n"Hoy tenemos un caso de neuromoduladores. ${b0} ${b0con} ${b1}"\n\n[B2 · 5-15 seg]\n"${b2a} ${b2b}"\n\n[B3 · 15-28 seg]\n"Lo que hacemos es aplicar neuromoduladores en ${b3a}. Lo que consigue es ${b3b}.${b3c}"\n\n[B4 · 28-36 seg]\n"${b4}"\n\n[B5 · 36-44 seg]\n"${b5} Y sin que nadie sepa que se ha hecho nada."\n\n[B6 · 44-50 seg]\n"En ${b6a} siempre empezamos por un diagnóstico gratuito y personalizado antes de aplicar nada, porque la dosis y la técnica tienen que adaptarse a cada caso. Si quieres saber si este tratamiento tiene sentido en tu caso, haz clic, rellena el formulario y solicita tu diagnóstico gratuito."`;
+  navigator.clipboard.writeText(txt).then(()=>{
+    const btn=document.querySelector('[onclick="copyGuion()"]');if(btn){btn.textContent='✓ Copiado';setTimeout(()=>btn.textContent='📋 Copiar guion',2000);}
+  }).catch(()=>alert('Copia manualmente el guion desde el panel.'));
+}
+
+US['3c']='';
+</script>
+</body>
+</html>
