@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UGC Médico · Aumento de Labios · Clinic Growth</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap');
+:root{
+  --bg:#0f0e0d;--bg2:#181614;--bg3:#201e1b;--bg4:#2a2723;
+  --border:#2e2b27;--border2:#3a3630;
+  --accent:#C2A290;--accent2:#d4b8a8;--accent-dim:rgba(194,162,144,.08);
+  --green:#7ab89a;--green-dim:rgba(122,184,154,.08);
+  --text:#e8e0d8;--text2:#b8afa6;--text3:#7a7068;
+  --font-serif:'DM Serif Display',Georgia,serif;
+  --font-sans:'DM Sans',system-ui,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:var(--font-sans);font-size:14px;line-height:1.7;min-height:100vh}
+
+/* HEADER */
+.header{padding:20px 24px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.header-left{display:flex;flex-direction:column;gap:4px}
+.header-logo{font-size:10px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--text3)}
+.header-title{font-family:var(--font-serif);font-size:20px;color:var(--text)}
+.header-title em{color:var(--accent);font-style:italic}
+.header-time{font-size:11px;color:var(--green);background:var(--green-dim);border:1px solid rgba(122,184,154,.2);border-radius:4px;padding:3px 10px;white-space:nowrap}
+
+/* PROGRESS */
+.progress-bar{padding:12px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px}
+.prog-label{font-size:11px;color:var(--text3);white-space:nowrap}
+.prog-track{flex:1;height:3px;background:var(--border2);border-radius:2px}
+.prog-fill{height:3px;background:var(--accent);border-radius:2px;transition:width .3s}
+.prog-count{font-size:11px;color:var(--accent);font-weight:500;white-space:nowrap}
+
+/* TABS */
+.tabs{display:flex;gap:0;border-bottom:1px solid var(--border);overflow-x:auto;padding:0 24px}
+.tab{font-size:12px;padding:10px 16px;color:var(--text3);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;transition:all .15s;font-family:var(--font-sans);background:none;border-top:none;border-left:none;border-right:none}
+.tab:hover{color:var(--text2)}
+.tab.on{color:var(--accent);border-bottom-color:var(--accent)}
+
+/* PANELS */
+.panel{display:none;padding:20px 24px}.panel.on{display:block}
+
+/* BLOCKS */
+.blk{margin-bottom:12px;border:1px solid var(--border);border-radius:8px;overflow:hidden}
+.blk-head{display:grid;grid-template-columns:32px 1fr auto;align-items:center;gap:10px;padding:11px 16px;background:var(--bg3);border-bottom:1px solid var(--border)}
+.blk-num{width:24px;height:24px;border-radius:50%;background:var(--accent-dim);border:1px solid rgba(194,162,144,.25);display:flex;align-items:center;justify-content:center;font-family:var(--font-serif);font-style:italic;font-size:13px;color:var(--accent);flex-shrink:0}
+.blk-name{font-size:13px;font-weight:500;color:var(--text)}
+.blk-dur{font-size:10px;color:var(--text3);background:var(--bg2);border:1px solid var(--border);border-radius:3px;padding:2px 8px;white-space:nowrap}
+.blk-body{padding:14px;display:flex;flex-direction:column;gap:12px}
+
+/* SCRIPT LINE */
+.sp{font-size:13px;line-height:1.9;color:var(--text);font-style:italic;padding:12px 14px;background:var(--bg2);border-left:2px solid var(--border2);border-radius:0 4px 4px 0}
+.sp-note{font-size:11px;color:var(--text3);font-style:normal;margin-top:6px}
+.pending{color:var(--accent);font-style:normal;border-bottom:1px dashed var(--accent);padding:0 2px;font-size:12px;opacity:.8;cursor:default}
+.filled{color:var(--accent2);font-style:italic;font-weight:500}
+
+/* OPTIONS */
+.og-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);margin-bottom:6px}
+.og-pills{display:flex;flex-wrap:wrap;gap:5px}
+.op{font-size:12px;padding:5px 11px;border:1px solid var(--border2);border-radius:4px;background:var(--bg2);color:var(--text2);cursor:pointer;transition:all .12s;line-height:1.4;font-family:var(--font-sans)}
+.op:hover{border-color:var(--accent);color:var(--accent)}
+.op.on{background:var(--accent-dim);border-color:var(--accent);color:var(--accent);font-weight:500}
+
+/* DIRECTOR NOTE */
+.dir{padding:10px 12px;background:var(--bg2);border:1px solid var(--border);border-radius:6px}
+.dir-title{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);margin-bottom:5px}
+.dir-main{font-size:12px;color:var(--text2);line-height:1.6;margin-bottom:8px}
+.dir-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.dir-box{background:var(--bg3);border:1px solid var(--border);border-radius:4px;padding:8px 10px}
+.dir-box-l{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--text3);margin-bottom:3px}
+.dir-box-v{font-size:12px;color:var(--text2);line-height:1.4}
+
+/* ASSEMBLED */
+.asm-blk{margin-bottom:20px}
+.asm-blk-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--text3);margin-bottom:6px;display:flex;align-items:center;gap:8px}
+.badge{font-size:10px;padding:2px 7px;border-radius:999px;border:1px solid}
+.badge-ok{color:#4caf82;border-color:#4caf82;background:rgba(76,175,130,.1)}
+.badge-pend{color:var(--accent);border-color:var(--accent);background:var(--accent-dim)}
+.asm-text{font-size:14px;line-height:1.95;color:var(--text);font-style:italic}
+.asm-note{font-size:11px;color:var(--text3);font-style:normal;margin-top:4px}
+.asm-abl{color:var(--accent);font-style:normal;border-bottom:1px dashed var(--accent);padding:0 2px;font-size:13px;opacity:.7}
+.asm-afl{color:var(--accent2);font-style:italic;font-weight:500}
+.divider{height:1px;background:var(--border);margin:16px 0}
+
+/* SHORT */
+.short-blk{margin-bottom:10px;padding:12px 14px;background:var(--bg3);border-radius:6px;border:1px solid var(--border)}
+.short-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);margin-bottom:5px}
+.short-text{font-size:13px;line-height:1.85;color:var(--text);font-style:italic}
+.dyn{color:var(--text3);font-style:italic}
+.dyn.on{color:var(--accent2);font-weight:500}
+
+/* COPY BTN */
+.copy-btn{display:block;width:100%;margin-top:16px;padding:10px;background:var(--accent-dim);border:1px solid var(--accent);border-radius:6px;color:var(--accent);font-size:12px;font-weight:500;cursor:pointer;text-align:center;font-family:var(--font-sans);transition:all .15s}
+.copy-btn:hover{background:rgba(194,162,144,.15)}
+
+/* CLINICA INPUT */
+#clinica-input-wrap{display:none;margin-top:8px}
+#clinica-input{width:100%;padding:8px 12px;background:var(--bg2);border:1px solid var(--border2);border-radius:5px;color:var(--text);font-size:13px;font-family:var(--font-sans)}
+#clinica-input:focus{outline:none;border-color:var(--accent)}
+
+/* SCROLLBAR */
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-left">
+    <div class="header-logo">Clinic Growth · UGC Médico</div>
+    <div class="header-title">Herramienta de guion — <em>Aumento de labios</em></div>
+  </div>
+  <div class="header-time">⏱ Menos de 2 min</div>
+</div>
+
+<div class="progress-bar">
+  <div class="prog-label">Bloques completados</div>
+  <div class="prog-track"><div class="prog-fill" id="uprog" style="width:0%"></div></div>
+  <div class="prog-count"><span id="uprog-num">0</span> / 6</div>
+</div>
+
+<div class="tabs">
+  <button class="tab on" onclick="usv('elegir',this)">① Elige opciones</button>
+  <button class="tab" onclick="usv('guion',this)">② Lee el guion</button>
+  <button class="tab" onclick="usv('corto',this)">③ Versión corta</button>
+</div>
+
+
+<!-- ═══ PANEL 1 — ELEGIR ═══ -->
+<div class="panel on" id="up-elegir">
+
+  <!-- BLOQUE 1 -->
+  <div class="blk">
+    <div class="blk-head">
+      <div class="blk-num">1</div>
+      <div class="blk-name">Presentación del caso</div>
+      <div class="blk-dur">0–5 seg</div>
+    </div>
+    <div class="blk-body">
+      <div class="sp">"Hoy tenemos un caso de aumento de labios. <span class="pending" id="us1n">nombre</span> <span class="pending" id="us1">elige caso</span>."
+        <div class="sp-note">El nombre lo pone el cámara antes de grabar. El conector cambia automáticamente según el caso.</div>
+      </div>
+      <div>
+        <div class="og-label">Nombre de la paciente</div>
+        <input type="text" id="name-input" placeholder="Escribe el nombre aquí" style="width:100%;padding:8px 12px;background:var(--bg2);border:1px solid var(--border2);border-radius:5px;color:var(--text);font-size:13px;font-family:var(--font-sans);margin-bottom:12px" oninput="setName(this.value)">
+        <div class="og-label">¿Cuál es el caso?</div>
+        <div class="og-pills" id="ug1">
+          <div class="op" onclick="usel(1,'siente que sus labios no están equilibrados con el resto de sus facciones.','siente que')">labios finos — sin presencia</div>
+          <div class="op" onclick="usel(1,'tiene un lado más grueso que el otro y le genera inseguridad.','— tiene')">asimetría labial</div>
+          <div class="op" onclick="usel(1,'siente que sus labios han perdido volumen con los años y ya no son como antes.','siente que')">volumen perdido con la edad</div>
+          <div class="op" onclick="usel(1,'siente que le falta definición: ni arco de cupido marcado ni contorno claro.','siente que')">sin definición — contorno difuminado</div>
+          <div class="op" onclick="usel(1,'siente que siempre tiene los labios secos y cortados, y aunque se los hidrate constantemente no consigue que estén bien.','siente que')">hidratación — siempre cortados aunque se los hidrate</div>
+          <div class="op" onclick="usel(1,'tiene líneas alrededor de la boca que le preocupan y hacen que el pintalabios no quede bien.','— tiene')">código de barras — líneas alrededor de la boca</div>
+        </div>
+      </div>
+      <div class="dir">
+        <div class="dir-title">Indicaciones de grabación</div>
+        <div class="dir-main">Plano medio. Doctora a cámara. Tono cercano, como si le contara algo a alguien de confianza.</div>
+        <div class="dir-grid">
+          <div class="dir-box"><div class="dir-box-l">Tono</div><div class="dir-box-v">Natural y cercano. Nada clínico.</div></div>
+          <div class="dir-box"><div class="dir-box-l">No hacer</div><div class="dir-box-v">No juzgar el aspecto. No decir "labios feos" ni usar nombres de marca.</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BLOQUE 2 -->
+  <div class="blk">
+    <div class="blk-head">
+      <div class="blk-num">2</div>
+      <div class="blk-name">Qué vemos y por qué ocurre</div>
+      <div class="blk-dur">5–15 seg</div>
+    </div>
+    <div class="blk-body">
+      <div class="sp">"<span class="pending" id="us2a">hueco 1</span> <span class="pending" id="us2b">hueco 2</span>"
+        <div class="sp-note">Dos frases independientes, sin conector forzado. La primera explica la causa. La segunda cómo lo vive ella.</div>
+      </div>
+      <div>
+        <div class="og-label">¿Por qué ocurre? (hueco 1 — causa clínica)</div>
+        <div class="og-pills" id="ug2a">
+          <div class="op" onclick="usel('2a','Hay bocas que de base tienen menos volumen. No es un problema médico, pero sí afecta a cómo se percibe toda la cara.')">labios finos — sin presencia</div>
+          <div class="op" onclick="usel('2a','La asimetría labial es muy frecuente — casi nadie tiene los dos labios exactamente iguales.')">asimetría — es lo más normal</div>
+          <div class="op" onclick="usel('2a','A partir de los 25 años los labios pierden volumen de forma natural, igual que el resto de la cara.')">pérdida de volumen con la edad</div>
+          <div class="op" onclick="usel('2a','Es algo estructural: la forma en que ese labio está construido hace que el contorno se pierda y que la boca no tenga protagonismo.')">contorno que se difumina</div>
+          <div class="op" onclick="usel('2a','El labio no tiene glándulas sebáceas, así que no puede hidratarse solo. Si la barrera está debilitada, por más que te pongas bálsamo el agua se escapa.')">hidratación — barrera debilitada</div>
+          <div class="op" onclick="usel('2a','Las líneas de código de barras aparecen por la pérdida de colágeno y los movimientos repetitivos de la boca.')">código de barras — colágeno y gestos</div>
+        </div>
+      </div>
+      <div style="margin-top:8px">
+        <div class="og-label">¿Cómo lo vive ella? (hueco 2)</div>
+        <div class="og-pills" id="ug2b">
+          <div class="op" onclick="usel('2b','Y el resultado es que los labios desaparecen en foto aunque te los maquilles.')">desaparecen aunque te los maquilles</div>
+          <div class="op" onclick="usel('2b','Y eso hace que la boca parezca más pequeña de lo que realmente es.')">parece más pequeña</div>
+          <div class="op" onclick="usel('2b','El resultado es una sonrisa que no comunica lo que esa persona siente por dentro.')">sonrisa que no expresa</div>
+          <div class="op" onclick="usel('2b','Pero una vez que te das cuenta, no puedes dejar de verlo.')">pero una vez que te das cuenta no puedes dejar de verlo</div>
+          <div class="op" onclick="usel('2b','Y los labios se ven secos, con esas líneas finas y esos cortes que no desaparecen.')">labios secos con líneas y cortes que no desaparecen</div>
+          <div class="op" onclick="usel('2b','Lo que más molesta no es verlas sino que hacen que el pintalabios no quede bien.')">el pintalabios no queda bien</div>
+        </div>
+      </div>
+      <div class="dir">
+        <div class="dir-title">Indicaciones de grabación</div>
+        <div class="dir-main">Señala la zona de la boca con un gesto suave mientras hablas. Pausa natural entre las dos frases.</div>
+        <div class="dir-grid">
+          <div class="dir-box"><div class="dir-box-l">Tono</div><div class="dir-box-v">Empático. Como si entendieras exactamente cómo se siente.</div></div>
+          <div class="dir-box"><div class="dir-box-l">No hacer</div><div class="dir-box-v">No describir negativamente el físico. No decir "labios feos".</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BLOQUE 3 -->
+  <div class="blk">
+    <div class="blk-head">
+      <div class="blk-num">3</div>
+      <div class="blk-name">Qué hacemos y cómo</div>
+      <div class="blk-dur">15–28 seg</div>
+    </div>
+    <div class="blk-body">
+      <div class="sp" id="us3-sp">"Lo que hacemos es trabajar con ácido hialurónico. Lo que conseguimos es <span class="pending" id="us3b">efecto</span>. <span id="us3c"></span>"
+        <div class="sp-note">Explícalo como si le hablaras a alguien que no sabe nada del tratamiento. Sin jerga médica.</div>
+      </div>
+      <div id="zona-wrap" style="display:none">
+        <div class="og-label">¿En qué zona?</div>
+        <div class="og-pills" id="ug3a">
+          <div class="op" onclick="usel('3a','el contorno labial')">contorno</div>
+          <div class="op" onclick="usel('3a','las líneas alrededor de la boca')">líneas — código de barras</div>
+        </div>
+      </div>
+      <div style="margin-top:8px">
+        <div class="og-label">¿Qué efecto conseguimos?</div>
+        <div class="og-pills" id="ug3b">
+          <div class="op" onclick="usel('3b','añadir volumen de forma progresiva, controlando exactamente cuánto ponemos en cada punto')">añadir volumen controlado</div>
+          <div class="op" onclick="usel('3b','redefinir el contorno sin cambiar la forma del labio, solo marcando lo que ya estaba')">redefinir el contorno</div>
+          <div class="op" onclick="usel('3b','corregir la diferencia entre los dos lados trabajando con precisión milimétrica')">corregir la asimetría</div>
+          <div class="op" onclick="usel('3b','devolver densidad e hidratación para que el labio vuelva a tener ese aspecto jugoso y natural')">devolver densidad e hidratación</div>
+          <div class="op" onclick="usel('3b','suavizar esas líneas sin tocar el labio, porque el problema está alrededor, no dentro')">suavizar código de barras</div>
+          <div class="op" onclick="usel('3b','dar volumen y definición al mismo tiempo, para que la boca tenga más presencia sin perder naturalidad')">volumen + definición combinados</div>
+        </div>
+      </div>
+      <div style="margin-top:8px">
+        <div class="og-label">¿Algo más que aclarar? (opcional)</div>
+        <div class="og-pills" id="ug3c">
+          <div class="op on" onclick="usel('3c','')">No, con esto es suficiente</div>
+          <div class="op" onclick="usel('3c','La cantidad exacta la decidimos en consulta, nunca antes, porque depende de la estructura de cada cara.')">la cantidad se decide en consulta</div>
+          <div class="op" onclick="usel('3c','Siempre empezamos con menos de lo que parece y vamos viendo cómo responde, para que el resultado sea lo más natural posible.')">empezar con poco y ajustar</div>
+        </div>
+      </div>
+      <div class="dir">
+        <div class="dir-title">Indicaciones de grabación</div>
+        <div class="dir-main">Señala la zona mientras la nombras. Habla despacio — es el bloque más importante para que el espectador entienda.</div>
+        <div class="dir-grid">
+          <div class="dir-box"><div class="dir-box-l">Tono</div><div class="dir-box-v">Claro y tranquilo. Que cualquiera lo entienda.</div></div>
+          <div class="dir-box"><div class="dir-box-l">No hacer</div><div class="dir-box-v">No decir el nombre del producto. No prometer duración exacta ni decir que no duele.</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BLOQUE 4 -->
+  <div class="blk">
+    <div class="blk-head">
+      <div class="blk-num">4</div>
+      <div class="blk-name">La clave que marca la diferencia</div>
+      <div class="blk-dur">28–36 seg</div>
+    </div>
+    <div class="blk-body">
+      <div class="sp">"<span class="pending" id="us4">elige frase</span>"
+        <div class="sp-note">Mira a cámara directo. Es el momento en que el espectador decide si confía o no.</div>
+      </div>
+      <div>
+        <div class="og-label">Elige la frase que más encaja con este caso:</div>
+        <div class="og-pills" id="ug4">
+          <div class="op" onclick="usel(4,'Lo más importante en labios no es cuánto pones: es dónde pones y cómo distribuyes.')">dónde pones importa más que cuánto</div>
+          <div class="op" onclick="usel(4,'El error más común es poner demasiado la primera vez. Nosotros preferimos ir poco a poco: siempre se puede añadir.')">empezar poco — siempre se puede añadir</div>
+          <div class="op" onclick="usel(4,'El labio aumentado que se nota es casi siempre un labio mal equilibrado, no uno con mucho volumen. El equilibrio es lo que da naturalidad.')">el equilibrio es lo que da naturalidad</div>
+          <div class="op" onclick="usel(4,'Hay que respetar la proporción entre labio superior e inferior. Si trabajas solo uno sin mirar el otro, el resultado nunca queda bien.')">respetar la proporción entre labios</div>
+          <div class="op" onclick="usel(4,'Muchas pacientes tienen miedo a quedarse con cara de pato. Eso pasa cuando se empuja el labio hacia fuera en vez de hacia arriba. No es lo mismo y se nota.')">el miedo a la cara de pato — explicado</div>
+          <div class="op" onclick="usel(4,'En labios, la mano importa tanto como el producto. Con el mismo ácido hialurónico, dos médicos distintos dan resultados completamente diferentes.')">la mano importa tanto como el producto</div>
+        </div>
+      </div>
+      <div class="dir">
+        <div class="dir-title">Indicaciones de grabación</div>
+        <div class="dir-main">Pausa antes de empezar. Mirada directa a cámara. Habla al espectador, no a la paciente.</div>
+        <div class="dir-grid">
+          <div class="dir-box"><div class="dir-box-l">Tono</div><div class="dir-box-v">Seguro y cercano. Sin sonar a publicidad.</div></div>
+          <div class="dir-box"><div class="dir-box-l">No hacer</div><div class="dir-box-v">No decir "somos los mejores" ni "técnica exclusiva".</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BLOQUE 5 -->
+  <div class="blk">
+    <div class="blk-head">
+      <div class="blk-num">5</div>
+      <div class="blk-name">Resultado real</div>
+      <div class="blk-dur">36–44 seg</div>
+    </div>
+    <div class="blk-body">
+      <div class="sp">"Aquí podemos ver claramente el antes y el después. <span class="pending" id="us5dyn">elige caso en bloque 1</span> Y sin que nadie sepa que se ha hecho nada."
+        <div class="sp-note">La parte central se completa automáticamente según el caso elegido en el bloque 1.</div>
+      </div>
+      <div class="dir">
+        <div class="dir-title">Indicaciones de grabación</div>
+        <div class="dir-main">Primero mira a la paciente cuando describes su resultado. Luego vuelve a cámara para la frase final fija.</div>
+        <div class="dir-grid">
+          <div class="dir-box"><div class="dir-box-l">Tono</div><div class="dir-box-v">Cálido. Como si ya vieras el resultado antes de que ocurra.</div></div>
+          <div class="dir-box"><div class="dir-box-l">No hacer</div><div class="dir-box-v">No decir "quedará perfecta". No prometer nada exacto ni duración.</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BLOQUE 6 -->
+  <div class="blk">
+    <div class="blk-head">
+      <div class="blk-num">6</div>
+      <div class="blk-name">Autoridad + CTA</div>
+      <div class="blk-dur">44–50 seg</div>
+    </div>
+    <div class="blk-body">
+      <div class="sp" id="us6-sp">"<span class="pending" id="us6pre">elige perfil</span> siempre empezamos por un diagnóstico gratuito y personalizado antes de aplicar nada, porque la cantidad y la técnica tienen que adaptarse a cada labio. Si quieres saber si este tratamiento tiene sentido en tu caso, haz clic, rellena el formulario y solicita tu diagnóstico gratuito."
+        <div class="sp-note">El texto de presentación cambia según el perfil. La última frase es siempre fija.</div>
+      </div>
+      <div>
+        <div class="og-label">¿Clínica o doctor independiente?</div>
+        <div class="og-pills" id="ug6">
+          <div class="op" onclick="selectPerfil('clinica',this)">Clínica (nombre propio)</div>
+          <div class="op" onclick="selectPerfil('doctor',this)">Doctor independiente</div>
+        </div>
+        <div id="clinica-input-wrap" style="display:none;margin-top:8px">
+          <div class="og-label">Nombre de la clínica</div>
+          <input type="text" id="clinica-input" placeholder="Ej: Clínica Bella..." oninput="update6()" style="width:100%;padding:8px 12px;background:var(--bg2);border:1px solid var(--border2);border-radius:5px;color:var(--text);font-size:13px;font-family:var(--font-sans);margin-bottom:8px">
+        </div>
+        <div id="doctor-input-wrap" style="display:none;margin-top:8px">
+          <div class="og-label">Tu nombre</div>
+          <input type="text" id="doctor-input" placeholder="Ej: Laura García..." oninput="update6()" style="width:100%;padding:8px 12px;background:var(--bg2);border:1px solid var(--border2);border-radius:5px;color:var(--text);font-size:13px;font-family:var(--font-sans);margin-bottom:8px">
+        </div>
+        <div id="ciudad-wrap" style="display:none;margin-top:4px">
+          <div class="og-label">Ciudad</div>
+          <input type="text" id="ciudad-input" placeholder="Ej: Madrid, Barcelona..." oninput="update6()" style="width:100%;padding:8px 12px;background:var(--bg2);border:1px solid var(--border2);border-radius:5px;color:var(--text);font-size:13px;font-family:var(--font-sans)">
+        </div>
+      </div>
+      <div class="dir">
+        <div class="dir-title">Indicaciones de grabación</div>
+        <div class="dir-main">Plano medio, sola, mirada a cámara. Pausa antes del CTA. Invitar, no vender.</div>
+        <div class="dir-grid">
+          <div class="dir-box"><div class="dir-box-l">Tono</div><div class="dir-box-v">Cálido y directo.</div></div>
+          <div class="dir-box"><div class="dir-box-l">No hacer</div><div class="dir-box-v">No cerrar con urgencia forzada ni énfasis ascendente.</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <button class="copy-btn" onclick="usv('guion', document.querySelectorAll('.tab')[1])">Ver guion completo →</button>
+
+</div><!-- end panel elegir -->
+
+
+<!-- ═══ PANEL 2 — GUION ═══ -->
+<div class="panel" id="up-guion">
+
+  <div style="margin-bottom:20px;padding:12px 16px;background:var(--bg3);border:1px solid var(--border2);border-radius:8px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">
+    <div>
+      <div style="font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);margin-bottom:3px">Progreso</div>
+      <div style="font-size:13px;color:var(--text)">Bloques completados: <span style="color:var(--accent);font-weight:500" id="uprog-num2">0</span> / 6</div>
+    </div>
+    <button class="copy-btn" style="margin:0;padding:7px 16px;width:auto" onclick="copyGuion()">📋 Copiar guion</button>
+  </div>
+
+  <div class="asm-blk">
+    <div class="asm-blk-label">Bloque 1 · Presentación &nbsp;<span class="badge badge-pend" id="ust1">pendiente</span></div>
+    <div class="asm-text">"Hoy tenemos un caso de aumento de labios. <span class="asm-abl" id="ua1n">nombre</span> <span class="asm-abl" id="ua1">elige en el paso anterior</span>."</div>
+    <div class="asm-note">Plano medio. Doctora a cámara. Tono cercano.</div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="asm-blk">
+    <div class="asm-blk-label">Bloque 2 · Qué vemos &nbsp;<span class="badge badge-pend" id="ust2">pendiente</span></div>
+    <div class="asm-text">"<span class="asm-abl" id="ua2a">elige en el paso anterior</span> <span class="asm-abl" id="ua2b">elige en el paso anterior</span>"</div>
+    <div class="asm-note">Señala la zona con un gesto suave.</div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="asm-blk">
+    <div class="asm-blk-label">Bloque 3 · Qué hacemos &nbsp;<span class="badge badge-pend" id="ust3">pendiente</span></div>
+    <div class="asm-text" id="ua3-text">"Lo que hacemos es trabajar con ácido hialurónico<span id="ua3a-wrap"> en <span class="asm-abl" id="ua3a">elige zona</span></span>. Lo que conseguimos es <span class="asm-abl" id="ua3b">elige efecto</span>. <span id="ua3c"></span>"</div>
+    <div class="asm-note">Señala la zona. Habla despacio en este bloque.</div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="asm-blk">
+    <div class="asm-blk-label">Bloque 4 · La clave &nbsp;<span class="badge badge-pend" id="ust4">pendiente</span></div>
+    <div class="asm-text" id="ua4">"<span class="asm-abl">elige frase</span>"</div>
+    <div class="asm-note">Mirada directa a cámara. Pausa antes de empezar.</div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="asm-blk">
+    <div class="asm-blk-label">Bloque 5 · Resultado &nbsp;<span class="badge badge-pend" id="ust5">pendiente</span></div>
+    <div class="asm-text">"Aquí podemos ver claramente el antes y el después. <span class="asm-abl" id="ua5dyn">elige caso en bloque 1</span> Y sin que nadie sepa que se ha hecho nada."</div>
+    <div class="asm-note">Mira a la paciente primero, vuelve a cámara en la frase final.</div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="asm-blk">
+    <div class="asm-blk-label">Bloque 6 · CTA &nbsp;<span class="badge badge-pend" id="ust6">pendiente</span></div>
+    <div class="asm-text"><span id="ua6a" class="asm-abl">elige perfil</span> siempre empezamos por un diagnóstico gratuito y personalizado antes de aplicar nada, porque la cantidad y la técnica tienen que adaptarse a cada labio. Si quieres saber si este tratamiento tiene sentido en tu caso, haz clic, rellena el formulario y solicita tu diagnóstico gratuito."</div>
+    <div class="asm-note">Pausa antes del CTA. Invitar, no vender.</div>
+  </div>
+
+</div><!-- end panel guion -->
+
+
+<!-- ═══ PANEL 3 — VERSIÓN CORTA ═══ -->
+<div class="panel" id="up-corto">
+
+  <div class="short-blk">
+    <div class="short-label">Bloque 1 · Presentación</div>
+    <div class="short-text">"Hoy tenemos un caso. <span class="dyn" id="uc1n">nombre</span> <span class="dyn" id="uc1">—</span>"</div>
+  </div>
+
+  <div class="short-blk">
+    <div class="short-label">Bloque 2 · Qué vemos</div>
+    <div class="short-text">"<span class="dyn" id="uc2a">—</span> <span class="dyn" id="uc2b">—</span>"</div>
+  </div>
+
+  <div class="short-blk">
+    <div class="short-label">Bloque 3 · Qué hacemos</div>
+    <div class="short-text">"Trabajamos en <span class="dyn" id="uc3a">—</span> para <span class="dyn" id="uc3b">—</span>."</div>
+  </div>
+
+  <div class="short-blk">
+    <div class="short-label">Bloque 4 · La clave</div>
+    <div class="short-text"><span class="dyn" id="uc4s">—</span></div>
+  </div>
+
+  <div class="short-blk">
+    <div class="short-label">Bloque 5 · Resultado</div>
+    <div class="short-text">"Aquí podemos ver claramente el antes y el después. <span class="dyn" id="uc5dyn">—</span> Y sin que nadie sepa que se ha hecho nada."</div>
+  </div>
+
+  <div class="short-blk">
+    <div class="short-label">Bloque 6 · CTA</div>
+    <div class="short-text">"En <span class="dyn" id="uc6a">—</span>, diagnóstico gratuito y personalizado primero. Haz clic, rellena el formulario y solicita tu diagnóstico gratuito."</div>
+  </div>
+
+  <button class="copy-btn" onclick="copyCorto()">📋 Copiar versión corta</button>
+
+</div><!-- end panel corto -->
+
+
+<script>
+const US={};
+
+/* PRELOAD MAP — comparación exacta con los valores de los botones */
+const PRELOAD={
+  'siente que sus labios no están equilibrados con el resto de sus facciones.':{
+    '2a':'Hay bocas que de base tienen menos volumen. No es un problema médico, pero sí afecta a cómo se percibe toda la cara.',
+    '2b':'Y el resultado es que los labios desaparecen en foto aunque te los maquilles.',
+    '3a':'los dos labios',
+    '3b':'añadir volumen de forma progresiva, controlando exactamente cuánto ponemos en cada punto'
+  },
+  'tiene un lado más grueso que el otro y le genera inseguridad.':{
+    '2a':'La asimetría labial es muy frecuente — casi nadie tiene los dos labios exactamente iguales.',
+    '2b':'Pero una vez que te das cuenta, no puedes dejar de verlo.',
+    '3b':'corregir la diferencia entre los dos lados trabajando con precisión milimétrica'
+  },
+  'siente que sus labios han perdido volumen con los años y ya no son como antes.':{
+    '2a':'A partir de los 25 años los labios pierden volumen de forma natural, igual que el resto de la cara.',
+    '2b':'Y el resultado es que los labios desaparecen en foto aunque te los maquilles.',
+    '3b':'añadir volumen de forma progresiva, controlando exactamente cuánto ponemos en cada punto'
+  },
+  'siente que le falta definición: ni arco de cupido marcado ni contorno claro.':{
+    '2a':'Es algo estructural: la forma en que ese labio está construido hace que el contorno se pierda y que la boca no tenga protagonismo.',
+    '2b':'Y el resultado es que los labios desaparecen en foto aunque te los maquilles.',
+    '3a':'el contorno labial',
+    '3b':'redefinir el contorno sin cambiar la forma del labio, solo marcando lo que ya estaba'
+  },
+  'siente que siempre tiene los labios secos y cortados, y aunque se los hidrate constantemente no consigue que estén bien.':{
+    '2a':'El labio no tiene glándulas sebáceas, así que no puede hidratarse solo. Si la barrera está debilitada, por más que te pongas bálsamo el agua se escapa.',
+    '2b':'Y los labios se ven secos, con esas líneas finas y esos cortes que no desaparecen.',
+    '3b':'devolver densidad e hidratación para que el labio vuelva a tener ese aspecto jugoso y natural'
+  },
+  'tiene líneas alrededor de la boca que le preocupan y hacen que el pintalabios no quede bien.':{
+    '2a':'Las líneas de código de barras aparecen por la pérdida de colágeno y los movimientos repetitivos de la boca.',
+    '2b':'Lo que más molesta no es verlas sino que hacen que el pintalabios no quede bien.',
+    '3a':'las líneas alrededor de la boca',
+    '3b':'suavizar esas líneas sin tocar el labio, porque el problema está alrededor, no dentro'
+  }
+};
+
+const RESULTADO={
+  'siente que sus labios no están equilibrados con el resto de sus facciones.':'Fíjate cómo ahora se ven. Antes desaparecían, ahora tienen protagonismo.',
+  'tiene un lado más grueso que el otro y le genera inseguridad.':'Mira cómo los dos lados ahora acompañan. Ya no hay nada que distraiga.',
+  'siente que sus labios han perdido volumen con los años y ya no son como antes.':'La boca ha vuelto. Ese volumen que se había ido, está otra vez ahí.',
+  'siente que le falta definición: ni arco de cupido marcado ni contorno claro.':'El contorno ahora existe. La boca se ve, se define, tiene presencia.',
+  'siente que siempre tiene los labios secos y cortados, y aunque se los hidrate constantemente no consigue que estén bien.':'Mira qué diferencia. Labios que se ven sanos, rellenos, con vida.',
+  'tiene líneas alrededor de la boca que le preocupan y hacen que el pintalabios no quede bien.':'Esas líneas que tanto molestaban, ya no están. El contorno vuelve a estar limpio.'
+};
+
+function setName(val){
+  US['name']=val;
+  const e1=document.getElementById('us1n');if(e1){e1.textContent=val||'';e1.className=val?'filled':'pending';}
+  const e2=document.getElementById('ua1n');if(e2){e2.textContent=val||'[nombre]';e2.className=val?'asm-afl':'asm-abl';}
+  const e3=document.getElementById('uc1n');if(e3){e3.textContent=val||'';e3.className=val?'dyn on':'dyn';}
+  uProg();
+}
+
+function usel(id,val,con){
+  US[id]=val;
+  if(id===1&&con!==undefined){
+    US['1con']=con;
+  }
+  /* actualizar span en panel elegir */
+  const pm={1:'us1','2a':'us2a','2b':'us2b','3a':'us3a','3b':'us3b','3c':'us3c',4:'us4',5:'us5'};
+  const pid=pm[String(id)];
+  if(pid){const e=document.getElementById(pid);if(e){e.textContent=val||'';e.className=val?'filled':'pending';}}
+  /* marcar botón activo */
+  const gm={1:'ug1','2a':'ug2a','2b':'ug2b','3a':'ug3a','3b':'ug3b','3c':'ug3c',4:'ug4',5:'ug5'};
+  const grp=document.getElementById(gm[String(id)]);
+  if(grp){
+    grp.querySelectorAll('.op').forEach(o=>o.classList.remove('on'));
+    if(val){
+      grp.querySelectorAll('.op').forEach(o=>{
+        const oc=o.getAttribute('onclick')||'';
+        o.classList.toggle('on',oc.includes("'"+val+"'")||oc.includes('"'+val+'"'));
+      });
+    }else{
+      const firstEmpty=grp.querySelector(".op[onclick*=\"usel('3c','')\"]");
+      if(firstEmpty)firstEmpty.classList.add('on');
+    }
+  }
+  /* preload si es bloque 1 */
+  if(id===1){
+    const pre=PRELOAD[val];
+    if(pre){
+      Object.entries(pre).forEach(([k,v])=>{
+        US[k]=v;
+        const ep=document.getElementById('us'+k);if(ep){ep.textContent=v;ep.className='filled';}
+        const ea=document.getElementById('ua'+k);if(ea){ea.textContent=v;ea.className='asm-afl';}
+        const ec=document.getElementById('uc'+k);if(ec){ec.textContent=v;ec.className='dyn on';}
+        const grp2=document.getElementById('ug'+k);
+        if(grp2){
+          grp2.querySelectorAll('.op').forEach(o=>{
+            const oc=o.getAttribute('onclick')||'';
+            o.classList.toggle('on',oc.includes("'"+v+"'")||oc.includes('"'+v+'"'));
+          });
+        }
+      });
+    }
+  }
+  uZona();
+  uAss();uShort();uProg();
+}
+
+function uZona(){
+  const casosConZona=[
+    'siente que le falta definición: ni arco de cupido marcado ni contorno claro.',
+    'tiene líneas alrededor de la boca que le preocupan y hacen que el pintalabios no quede bien.'
+  ];
+  const necesitaZona=casosConZona.includes(US[1]);
+  const wrap=document.getElementById('zona-wrap');
+  const sp=document.getElementById('us3-sp');
+  if(wrap) wrap.style.display=necesitaZona?'block':'none';
+  if(!necesitaZona){
+    US['3a']='__nozona__';
+/* b5 es dinámico, siempre completo */
+    if(sp) sp.innerHTML='"Lo que hacemos es trabajar con ácido hialurónico. Lo que conseguimos es <span class=\'pending\' id=\'us3b\'>'+(US['3b']||'efecto')+'</span>. <span id=\'us3c\'>'+(US['3c']||'')+'</span>"<div class=\'sp-note\'>Explícalo como si le hablaras a alguien que no sabe nada del tratamiento. Sin jerga médica.</div>';
+  } else {
+    if(US['3a']==='__nozona__') US['3a']='';
+    if(sp) sp.innerHTML='"Lo que hacemos es trabajar con ácido hialurónico en <span class=\''+(US['3a']?'filled':'pending')+'\' id=\'us3a\'>'+(US['3a']||'zona')+'</span>. Lo que conseguimos es <span class=\''+(US['3b']?'filled':'pending')+'\' id=\'us3b\'>'+(US['3b']||'efecto')+'</span>. <span id=\'us3c\'>'+(US['3c']||'')+'</span>"<div class=\'sp-note\'>Explícalo como si le hablaras a alguien que no sabe nada del tratamiento. Sin jerga médica.</div>';
+  }
+}
+
+function selectPerfil(perfil,btn){
+  document.getElementById('ug6').querySelectorAll('.op').forEach(o=>o.classList.remove('on'));
+  btn.classList.add('on');
+  US['6perfil']=perfil;
+  document.getElementById('clinica-input-wrap').style.display=perfil==='clinica'?'block':'none';
+  document.getElementById('doctor-input-wrap').style.display=perfil==='doctor'?'block':'none';
+  document.getElementById('ciudad-wrap').style.display='block';
+  update6();
+}
+
+function update6(){
+  const perfil=US['6perfil'];
+  if(!perfil) return;
+  const ciudad=(document.getElementById('ciudad-input')||{}).value||'';
+  let pre='', full='';
+  if(perfil==='clinica'){
+    const nombre=(document.getElementById('clinica-input')||{}).value||'';
+    full='En '+(nombre||'[nombre clínica]')+(ciudad?' aquí en '+ciudad:'');
+    pre=full;
+  } else {
+    const nombre=(document.getElementById('doctor-input')||{}).value||'';
+    pre='Soy '+(nombre?'el Dr./Dra. '+nombre:'[tu nombre]')+', y en mi consulta'+(ciudad?' aquí en '+ciudad:'');
+    full=pre;
+  }
+  US['6a']=full;
+  const e1=document.getElementById('us6pre');if(e1){e1.textContent=pre;e1.className=full&&full.indexOf('[')===(-1)?'filled':'pending';}
+  const e2=document.getElementById('ua6a');if(e2){e2.textContent=full;e2.className=full&&full.indexOf('[')===(-1)?'asm-afl':'asm-abl';}
+  const e3=document.getElementById('uc6a');if(e3){e3.textContent=full;e3.className=full&&full.indexOf('[')===(-1)?'dyn on':'dyn';}
+  uAss();uShort();uProg();
+}
+
+function uAss(){
+  const set=(id,val)=>{const e=document.getElementById(id);if(!e)return;if(val){e.textContent=val;e.className='asm-afl';}else{e.textContent='elige en el paso anterior';e.className='asm-abl';}};
+  set('ua1',US[1]);set('ua2a',US['2a']);set('ua2b',US['2b']);if(US['3a']&&US['3a']!=='__nozona__'){set('ua3a',US['3a']);const w=document.getElementById('ua3a-wrap');if(w)w.style.display='';}else{const w=document.getElementById('ua3a-wrap');if(w)w.style.display='none';}
+set('ua3b',US['3b']);
+  const a3c=document.getElementById('ua3c');if(a3c){a3c.textContent=US['3c']||'';a3c.className=US['3c']?'asm-afl':'';}
+  const a4=document.getElementById('ua4');if(a4){a4.innerHTML=US[4]?`"<span class="asm-afl">${US[4]}</span>"`:`"<span class="asm-abl">elige frase de criterio</span>"`;}
+  const r5=RESULTADO[US[1]]||'';
+  const e5a=document.getElementById('us5dyn');if(e5a){e5a.textContent=r5||'elige caso en bloque 1';e5a.className=r5?'filled':'pending';}
+  const e5b=document.getElementById('ua5dyn');if(e5b){e5b.textContent=r5||'elige caso en bloque 1';e5b.className=r5?'asm-afl':'asm-abl';}
+  const e5c=document.getElementById('uc5dyn');if(e5c){e5c.textContent=r5||'—';e5c.className=r5?'dyn on':'dyn';}
+  set('ua6a',US['6a']);
+  const b3ok=US['3b']&&(US['3a']==='__nozona__'||US['3a']);
+const checks={ust1:!!(US[1]&&US['name']),ust2:!!(US['2a']&&US['2b']),ust3:!!b3ok,ust4:!!US[4],ust5:true,ust6:!!US['6a']};
+  for(const[id,ok]of Object.entries(checks)){const e=document.getElementById(id);if(e){e.textContent=ok?'listo':'pendiente';e.className='badge '+(ok?'badge-ok':'badge-pend');}}
+  const n2=document.getElementById('uprog-num2');if(n2)n2.textContent=Object.values(checks).filter(Boolean).length;
+}
+
+function uShort(){
+  const m={uc1:US[1],uc2a:US['2a'],uc2b:US['2b'],uc3a:US['3a'],uc3b:US['3b'],uc5:US[5],uc6a:US['6a']};
+  for(const[id,val]of Object.entries(m)){const e=document.getElementById(id);if(e){e.textContent=val||'—';e.className=val?'dyn on':'dyn';}}
+  const c4s=document.getElementById('uc4s');if(c4s&&US[4]){const first=US[4].split('.')[0];c4s.textContent='"'+first+'."';c4s.className='dyn on';}
+}
+
+function uProg(){
+  const done=[!!(US[1]&&US['name']),!!(US['2a']&&US['2b']),!!(US['3a']&&US['3b']),!!US[4],!!US[5],!!US['6a']].filter(Boolean).length;
+  const pn=document.getElementById('uprog-num');const pf=document.getElementById('uprog');
+  if(pn)pn.textContent=done;if(pf)pf.style.width=(done/6*100)+'%';
+}
+
+function usv(id,btn){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.tab').forEach(b=>b.classList.remove('on'));
+  const panel=document.getElementById('up-'+id);if(panel)panel.classList.add('on');
+  if(btn)btn.classList.add('on');
+}
+
+function copyGuion(){
+  const b0=US['name']||'[nombre]';
+  const b0con=US['1con']||'siente que';
+  const b1=US[1]||'[pendiente]';
+  const b2a=US['2a']||'[pendiente]';
+  const b2b=US['2b']||'[pendiente]';
+  const b3a=US['3a']||'[pendiente]';
+  const b3b=US['3b']||'[pendiente]';
+  const b3c=US['3c']?' '+US['3c']:'';
+  const b4=US[4]||'[pendiente]';
+  const b5='Aquí podemos ver claramente el antes y el después. '+(RESULTADO[US[1]]||'');
+  const b6a=US['6a']||'[pendiente]';
+  const txt=`GUION UGC MÉDICO — AUMENTO DE LABIOS\n\n[B1 · 0-5 seg]\n"Hoy tenemos un caso de aumento de labios. ${b0} ${b0con} ${b1}"\n\n[B2 · 5-15 seg]\n"${b2a} ${b2b}"\n\n[B3 · 15-28 seg]\n"Lo que hacemos es trabajar con ácido hialurónico${b3a&&b3a!=='__nozona__'?' en '+b3a:''}. Lo que conseguimos es ${b3b}.${b3c}"\n\n[B4 · 28-36 seg]\n"${b4}"\n\n[B5 · 36-44 seg]\n"${b5} Y sin que nadie sepa que se ha hecho nada."\n\n[B6 · 44-50 seg]\n"En ${b6a} siempre empezamos por un diagnóstico gratuito y personalizado antes de aplicar nada, porque la cantidad y la técnica tienen que adaptarse a cada labio. Si quieres saber si este tratamiento tiene sentido en tu caso, haz clic, rellena el formulario y solicita tu diagnóstico gratuito."`;
+  navigator.clipboard.writeText(txt).then(()=>{
+    const btn=document.querySelector('[onclick="copyGuion()"]');
+    if(btn){btn.textContent='✓ Copiado';setTimeout(()=>btn.textContent='📋 Copiar guion',2000);}
+  }).catch(()=>alert('Copia manualmente el guion desde el panel.'));
+}
+
+function copyCorto(){
+  const n=US['name']||'[nombre]';
+  const con=US['1con']||'siente que';
+  const b1=US[1]||'—';
+  const b2a=US['2a']||'—';
+  const b2b=US['2b']||'—';
+  const b3a=US['3a']||'—';
+  const b3b=US['3b']||'—';
+  const b4s=US[4]?US[4].split('.')[0]+'.':'—';
+  const b5=US[5]||'—';
+  const b6a=US['6a']||'—';
+  const txt=`VERSIÓN CORTA — AUMENTO DE LABIOS\n\n"Hoy tenemos un caso. ${n} ${con} ${b1}"\n\n"${b2a} ${b2b}"\n\n"Trabajamos en ${b3a} para ${b3b}."\n\n"${b4s}"\n\n"${b5} Y sin que nadie sepa que se ha hecho nada."\n\n"En ${b6a}, diagnóstico gratuito y personalizado primero. Haz clic, rellena el formulario y solicita tu diagnóstico gratuito."`;
+  navigator.clipboard.writeText(txt).then(()=>{
+    const btn=document.querySelector('[onclick="copyCorto()"]');
+    if(btn){btn.textContent='✓ Copiado';setTimeout(()=>btn.textContent='📋 Copiar versión corta',2000);}
+  }).catch(()=>alert('Copia manualmente desde el panel.'));
+}
+
+/* init */
+US['3c']='';
+US['3a']='__nozona__';
+US[5]='Mira el antes y el después.';
+document.querySelector(".op[onclick*=\"usel('3c','')\"]").classList.add('on');
+uZona();
+</script>
+</body>
+</html>
